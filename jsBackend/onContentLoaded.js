@@ -1,10 +1,15 @@
 //Can just access document var directly from here
 
+var PERCENTAGE_CHANGE_CUTTOFF = 0.5;
+var THRESHOLD_FREQ = 20; 
+var WINDOW_SIZE = 0.5;
+var WINDOW_VIOLATION_THRESHOLD = 1;
+
 //alert("Extension is working")
 class Gif_Frame
 {
-	constructor(avgInten, delay){
-		this.avgInten = avgInten;
+	constructor(avgI, delay){
+		this.avgI = avgI;
 		this.delay = delay;
 	}
 }
@@ -69,20 +74,119 @@ function examineFrames(frames)
 		gifFrames[i] = new Gif_Frame(avgI, frame.delay);
 	}
 	
-	
-	
-	
-	
+	//Get change spectrum
+	return examineChanges(findChanges(gifFrames), gifFrames);
 	
 	var printOut = true;
 	for(var i = 0; i < gifFrames.length; ++i)
 	{
 		if(printOut)
-			console.log("Frame Delay: " + gifFrames[i].delay + " Frame int: " + gifFrames[i].avgInten);
+			console.log("Frame Delay: " + gifFrames[i].delay + " Frame var: " + gifFrames[i].avgI);
 	}
 	
-		return false;
+	return false;
+}
 
+
+
+function examineChanges(changes, spectrum)
+{
+	var runtime = calcRuntime(spectrum);
+	var numChanges = countChanges(changes);
+	
+	//If total runtime is less than one second, then just divide num of changes by runtime to see if above threshold
+	if(runtime <= 1)
+	{
+		var changeFreq = numChanges / runtime;
+		
+		if(changeFreq >= THRESHOLD_FREQ)
+		{
+			console.log("UNSAFE");
+			return true;
+		}		
+	}
+	else
+	{
+		var dangerFlags = 0;
+	
+		for(var i = 0; i < changes.length; ++i)
+		{
+			var curWindowSize = 0;
+			
+			var j = 0;
+			while(curWindowSize < WINDOW_SIZE && i + j < changes.length)
+			{
+				curWindowSize += spectrum[i + j].delay / 100;
+				++j;
+			}
+			
+			var nChangesInWind = 0;
+			
+			for(var k = i; k < i + j; ++k)
+				nChangesInWind += changes[k];
+			
+			var changeFreq = nChangesInWind / curWindowSize;
+			
+			if(changeFreq >= THRESHOLD_FREQ)
+				++dangerFlags;
+			
+			if(dangerFlags >= WINDOW_VIOLATION_THRESHOLD)
+			{
+				console.log("UNSAFE (WINDOW)");
+				return true;
+			}
+			
+		}
+	}
+	
+	return false;
+}
+
+
+function countChanges(changes)
+{
+	var nChanges = 0;
+	
+	for(var i = 0; i < changes.length; ++i)
+		nChanges+=changes[i];
+	
+	return nChanges;
+}
+
+
+//Get gif runtime in seconds
+function calcRuntime(spectrum)
+{
+	//Get total runtime in 1/100ths of a second
+	var runtime = 0;
+	for(var i = 0; i < spectrum.length; ++i)
+	{
+		runtime += spectrum[i].delay;
+	}
+	
+	return runtime /= 100;
+}
+
+//Walk through the intensity spectrum detecting changes in avg intensity between successive frames above a set threshold
+function findChanges(spectrum)
+{	
+	var changes = new Array();
+	changes[0] = 0;
+	
+	for(var i = 1; i < spectrum.length; ++i)
+	{
+		//Get abs percentage change in intensity per frame
+		var diff = Math.abs(spectrum[i].avgI - spectrum[i - 1].avgI);
+		var percDiff = diff / spectrum[i - 1].avgI;
+		
+		//If above cuttoff, mark this as a change event
+		if(percDiff >= PERCENTAGE_CHANGE_CUTTOFF)
+			changes[i] = 1;
+		else
+			changes[i] = 0;
+	}
+	
+	return changes;
 }
 
 
