@@ -2,32 +2,134 @@
 
 //alert("Extension is working")
 
+var shouldBlock;
+
 $('img').each(function (idx, img_tag)
 {
-if (/^.+\.gif$/.test($(img_tag).prop("src")))
+if (/^.+\.(?:G|g)(?:I|i)(?:F|f)$/.test($(img_tag).prop("src")))
 {
-	var gifFile = new SuperGif({ gif: img_tag, progressbar_height: 0 } );
+	loadGIF($(img_tag).attr("src"))
 
-	gifFile.load(function()
-	{
-		for (var i = 0; i < gifFile.get_length(); i++)
-		{
-		   gifFile.move_to(i);
 
-		   var c = gifFile.get_canvas();
-		   var ctx=c.getContext("2d");
-		   var pixels=ctx.getImageData(0,0,c.width,c.height);
 
-		   console.log("AVG FOR FRAME " + i);
-		   test(pixels);
-		}
-  });
+	shouldBlock = false;
+
+  if (shouldBlock)
+    $(img_tag)[0].remove()
 }
 });
 
 
 
-function test(imgData)
+
+
+
+
+
+class Gif_Frame
+{
+	constructor(avgInten, delay){
+		this.avgInten = avgInten;
+		this.delay = delay;
+	}
+
+}
+
+
+
+// user canvas
+// gif patch canvas
+var tempCanvas = document.createElement('canvas');
+var tempCtx = tempCanvas.getContext('2d');
+// full gif canvas
+var gifCanvas = document.createElement('canvas');
+var gifCtx = gifCanvas.getContext('2d');
+
+loadGIF();
+var gif;
+var counter = 0;
+// load a gif with the current input url value
+function loadGIF(url)
+{
+
+	console.log(counter);
+	counter++;
+
+	var oReq = new XMLHttpRequest();
+	oReq.open("GET", url, true);
+	oReq.responseType = "arraybuffer";
+
+	oReq.onload = function (oEvent) {
+	    var arrayBuffer = oReq.response; // Note: not oReq.responseText
+	    if (arrayBuffer) {
+	        gif = new GIF(arrayBuffer);
+	        var frames = gif.decompressFrames(true);
+
+			processGif(frames);
+	    }
+	};
+	oReq.send(null);
+}
+
+
+
+
+
+function processGif(frames)
+{
+	//Loop through all frames, for each frame calculate the avg intensity and delay
+
+	var gifFrames = new Array();
+
+	for (var i = 0; i < frames.length; ++i)
+	{
+
+		var frame = frames[i];
+
+
+		//Get avg intensity
+		var avgInten = calcAvgInten(getImgData(frame));
+		//Add this frame to our frames array
+		//var gf = new Gif_Frame(avgInten, frame.delay);
+	//	console.log("Frame Delay: " + gf.delay + " Frame int: " + gf.avgInten);
+		gifFrames[i] = new Gif_Frame(avgInten, frame.delay);
+
+
+	}
+
+	var printOut = false;
+
+	for(var i = 0; i < gifFrames.length; ++i)
+	{
+		if(printOut)
+			console.log("Frame Delay: " + gifFrames[i].delay + " Frame int: " + gifFrames[i].avgInten);
+	}
+
+}
+
+function getImgData(frame)
+{
+	var frameImageData;
+	var dims = frame.dims;
+
+
+	tempCanvas.width = dims.width;
+	tempCanvas.height = dims.height;
+	frameImageData = tempCtx.createImageData(dims.width, dims.height);
+
+	// set the patch data as an override
+	frameImageData.data.set(frame.patch);
+
+	// draw the patch back over the canvas
+	tempCtx.putImageData(frameImageData, 0, 0);
+
+	gifCtx.drawImage(tempCanvas, dims.left, dims.top);
+
+
+	return frameImageData;
+}
+
+function calcAvgInten(imgData)
 {
 
 	var greySum = 0;
@@ -40,8 +142,7 @@ function test(imgData)
 	  greySum += (r+g+b)/3;
 	}
 
-	console.log(greySum/(imgData.data.length / 4));
-
+	return greySum/(imgData.data.length / 4);
 
 
 }

@@ -27,11 +27,15 @@ $(document).ready(function ()
 			{
 			   gifFile.move_to(i); 
 			   
+			   var delay = gifFile.frames[0].delay;
+			   console.log("Delay " + delay);
+			   
+			   
 			   var c = gifFile.get_canvas();
 			   var ctx=c.getContext("2d");
 			   var pixels=ctx.getImageData(0,0,c.width,c.height);
 
-			   console.log("AVG FOR FRAME " + i);
+			//   console.log("AVG FOR FRAME " + i);
 			   test(pixels);
 			}
       });
@@ -53,7 +57,7 @@ function test(imgData)
 	  greySum += (r+g+b)/3;
 	}
 
-	console.log(greySum/(imgData.data.length / 4));
+//	console.log(greySum/(imgData.data.length / 4));
 
 
 	

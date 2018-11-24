@@ -7,7 +7,7 @@
                   potentially seizure inducing images.",
 
   "background": {
-    "scripts": ["libs/jquery.min.js", "libs/libgif.js"]
+    "scripts": ["libs/jquery.min.js","libs/gifuct-js.js"]
   },
 
   "page_action": {
@@ -19,6 +19,6 @@
   "content_scripts": [{
     "matches": ["https://*/*", "http://*/*"],
     "css": ["Dialog.css"],
-    "js": ["libs/jquery.min.js", "libs/libgif.js", "jsBackend/onContentLoaded.js"]
+    "js": ["libs/jquery.min.js", "libs/gifuct-js.js", "jsBackend/onContentLoaded.js"]
     }]
 }
