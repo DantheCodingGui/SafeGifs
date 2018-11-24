@@ -1,40 +1,39 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdn.rawgit.com/buzzfeed/libgif-js/master/libgif.js"></script>
 
-
-
 <h1 id="title">Javascript example no.2</h1>
 <input type="text" id="myTextField"/>
 <input type="submit" id="byBtn" value="Change" onclick="change()"/>
         <img src="https://i.imgur.com/RY2vTBQ.gif" 
         rel:auto_play="1" 
-        rel:rubbable="0" />
+        rel:gifFilebable="0" />
 
 <div id="frames">
 </div>
 
 <script>
 
-$(document).ready(function () {
-  $('img').each(function (idx, img_tag) {
-    if (/^.+\.gif$/.test($(img_tag).prop("src"))) {
-      var rub = new SuperGif({ gif: img_tag, progressbar_height: 0 } );
-      rub.load(function(){
-        for (var i = 0; i < rub.get_length(); i++)
-        {
-			//console.log(i);
-           rub.move_to(i); 
-		   
-		   var c = rub.get_canvas();
-		   var ctx=c.getContext("2d");
-		   var pixels=ctx.getImageData(0,0,c.width,c.height);
+$(document).ready(function () 
+{
+  $('img').each(function (idx, img_tag) 
+  {
+    if (/^.+\.gif$/.test($(img_tag).prop("src"))) 
+	{
+		var gifFile = new SuperGif({ gif: img_tag, progressbar_height: 0 } );
+		
+		gifFile.load(function()
+		{
+			for (var i = 0; i < gifFile.get_length(); i++)
+			{
+			   gifFile.move_to(i); 
+			   
+			   var c = gifFile.get_canvas();
+			   var ctx=c.getContext("2d");
+			   var pixels=ctx.getImageData(0,0,c.width,c.height);
 
-		   console.log("AVG FOR FRAME " + i);
-		   test(pixels);
-		   
-           var canvas = cloneCanvas(rub.get_canvas());
-           $("#frames").append(canvas);
-        }
+			   console.log("AVG FOR FRAME " + i);
+			   test(pixels);
+			}
       });
     }
   });
