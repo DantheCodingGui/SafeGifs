@@ -1,0 +1,57 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdn.rawgit.com/buzzfeed/libgif-js/master/libgif.js"></script>
+
+
+
+<h1 id="title">Javascript example no.2</h1>
+<input type="text" id="myTextField"/>
+<input type="submit" id="byBtn" value="Change" onclick="change()"/>
+        <img src="https://i.imgur.com/RY2vTBQ.gif" 
+        rel:auto_play="1" 
+        rel:rubbable="0" />
+
+<div id="frames">
+</div>
+
+<script>
+
+$(document).ready(function () {
+  $('img').each(function (idx, img_tag) {
+    if (/^.+\.gif$/.test($(img_tag).prop("src"))) {
+      var rub = new SuperGif({ gif: img_tag, progressbar_height: 0 } );
+      rub.load(function(){
+        for (var i = 0; i < rub.get_length(); i++)
+        {
+        	 //console.log(i);
+           rub.move_to(i); 
+		   
+		   var pixels = rub.pixels;
+		   
+           var canvas = cloneCanvas(rub.get_canvas());
+           $("#frames").append(canvas);
+        }
+      });
+    }
+  });
+});
+
+function cloneCanvas(oldCanvas) {
+
+    //create a new canvas
+    var newCanvas = document.createElement('canvas');
+    var context = newCanvas.getContext('2d');
+
+    //set dimensions
+    newCanvas.width = oldCanvas.width;
+    newCanvas.height = oldCanvas.height;
+
+    //apply the old canvas to the new one
+    context.drawImage(oldCanvas, 0, 0);
+
+    //return the new canvas
+    return newCanvas;
+}
+
+</script>
+
+
