@@ -6,15 +6,19 @@
   "description": "The only extension to protect users from
                   potentially seizure inducing images.",
 
-    "page_action": {
-      "default_icon": "placeholder.png",
-      "default_popup": "Dialog.html",
-      "default_title": "Gif analysis"
+  "background": {
+    "scripts": ["libs/jquery.min.js", "libs/libgif.js"]
+  },
+
+  "page_action": {
+    "default_icon": "placeholder.png",
+    "default_popup": "Dialog.html",
+    "default_title": "Gif analysis"
     },
 
   "content_scripts": [{
     "matches": ["https://*/*", "http://*/*"],
     "css": ["Dialog.css"],
-    "js": ["jsBackend/onContentLoaded.js"]
+    "js": ["libs/jquery.min.js", "libs/libgif.js", "jsBackend/onContentLoaded.js"]
     }]
 }
