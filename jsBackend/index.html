@@ -22,10 +22,15 @@ $(document).ready(function () {
       rub.load(function(){
         for (var i = 0; i < rub.get_length(); i++)
         {
-        	 //console.log(i);
+			//console.log(i);
            rub.move_to(i); 
 		   
-		   var pixels = rub.pixels;
+		   var c = rub.get_canvas();
+		   var ctx=c.getContext("2d");
+		   var pixels=ctx.getImageData(0,0,c.width,c.height);
+
+		   console.log("AVG FOR FRAME " + i);
+		   test(pixels);
 		   
            var canvas = cloneCanvas(rub.get_canvas());
            $("#frames").append(canvas);
@@ -34,6 +39,28 @@ $(document).ready(function () {
     }
   });
 });
+
+
+function test(imgData)
+{
+
+	var greySum = 0;
+	for (var i=0;i<imgData.data.length;i+=4)
+	{
+	  var r = imgData.data[i];
+	  var g = imgData.data[i+1];
+	  var b = imgData.data[i+2];
+	 
+	  greySum += (r+g+b)/3;
+	}
+
+	console.log(greySum/(imgData.data.length / 4));
+
+
+	
+}
+          
+
 
 function cloneCanvas(oldCanvas) {
 
