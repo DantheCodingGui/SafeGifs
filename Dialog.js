@@ -3,8 +3,8 @@ var ENABLED = true;
 // A percentage change greater than this between successive frames counts as a change
 var PERCENTAGE_CHANGE_CUTTOFF = 50;
 //Range of change frequencies that are considered to be dangerous
-var THRESHOLD_LOW_FREQ = 15;
-var THRESHOLD_HIGH_FREQ = 20;
+var THRESHOLD_LOW_FREQ = 10;
+var THRESHOLD_HIGH_FREQ = 30;
 //Should flashes be looked for in each colour channel separately or just in overall intensity
 var PER_CHANNEL_MODE = true;
 
@@ -53,8 +53,7 @@ function loadSettings()
 		ENABLED = data.key;
 		settingRead_enabled = true;
 
-				console.log("Enabled: " + ENABLED);
-
+		console.log("Enabled: " + ENABLED);
 
 		if(settingsLoaded())
 			 if (domLoaded)
@@ -183,23 +182,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     InvalidatePopup();
   })
-  $("input#perChannel").switchButton(perChannelOps);
-  $("input#perChannel").change(function() {
+  
     var e = this.checked;
 	var key1= "perChannel";
 	key1 = 'a'.key1;
-    console.log("Per channel value changed to " + e);
     chrome.storage.sync.set({key1: e});
 
-    SendMsgToContentScript();
-  })
+  
 
   $(function() {
      $( "#frequency-slider" ).slider({
         range: true,
         animate: "fast",
-        min: 5,
-        max: 40,
+        min: 3,
+        max: 45,
         values: [ defau ? 15 : THRESHOLD_LOW_FREQ, defau ? 20 : THRESHOLD_HIGH_FREQ ],
         change: function( event, ui ) {
            $("#frequency").val(ui.values[ 0 ] + "Hz - " + ui.values[ 1 ] + "Hz");
@@ -222,12 +218,13 @@ document.addEventListener('DOMContentLoaded', function() {
   $(function() {
      $( "#sensitivity-slider" ).slider({
         animate: "fast",
+		min: 2,
         value: defau ? 50 : PERCENTAGE_CHANGE_CUTTOFF,
         change: function( event, ui ) {
            $("#sensitivity").val(ui.value + "%");
 
 
-		   var key4= "sensitivity";
+		  var key4= "sensitivity";
 		  key4 = 'a'.key4;
           chrome.storage.sync.set({key4: ui.value});
           console.log("Sensitivity values changed to " + ui.value);

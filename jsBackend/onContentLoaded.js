@@ -53,16 +53,15 @@ var settingRead_enabled = false;
 var settingRead_lowerFreq = false;
 var settingRead_upperFreq = false;
 var settingRead_sensitivity = false;
-var settingRead_rgb=false;
 
 function settingsLoaded()
 {
-	return settingRead_enabled && settingRead_lowerFreq && settingRead_upperFreq && settingRead_sensitivity && settingRead_rgb ;
+	return settingRead_enabled && settingRead_lowerFreq && settingRead_upperFreq && settingRead_sensitivity ;
 }
 
 function loadSettings()
 {
-	settingRead_enabled = settingRead_lowerFreq = settingRead_upperFreq = settingRead_sensitivity = settingRead_rgb = false;
+	settingRead_enabled = settingRead_lowerFreq = settingRead_upperFreq = settingRead_sensitivity = false;
 
 	var key = "enabled";
 	key = 'a'.key;
@@ -70,7 +69,6 @@ function loadSettings()
 		ENABLED = data.key;
 		settingRead_enabled = true;
 
-				console.log("Enabled: " + ENABLED);
 
 
 		if(settingsLoaded())
@@ -85,7 +83,6 @@ function loadSettings()
 		THRESHOLD_LOW_FREQ = data.key2;
 		settingRead_lowerFreq = true;
 
-		console.log("LOW: " + THRESHOLD_LOW_FREQ);
 
 		if(settingsLoaded())
 			startAnalysis();
@@ -98,7 +95,6 @@ function loadSettings()
 		THRESHOLD_HIGH_FREQ = data.key3;
 		settingRead_upperFreq = true;
 
-				console.log("HIGH: " + THRESHOLD_HIGH_FREQ);
 
 
 		if(settingsLoaded())
@@ -109,10 +105,9 @@ function loadSettings()
 			key3 = 'a'.key3;
 
 	chrome.storage.sync.get(key3, function(data) {
-		PERCENTAGE_CHANGE_CUTTOFF = data.key4;
+		PERCENTAGE_CHANGE_CUTTOFF = data.key4 / 100;
 		settingRead_sensitivity = true;
 
-						console.log("Sensit: " + PERCENTAGE_CHANGE_CUTTOFF);
 
 
 		if(settingsLoaded())
@@ -124,15 +119,8 @@ function loadSettings()
 
 
 	chrome.storage.sync.get(key4, function(data) {
-		PER_CHANNEL_MODE = data.key1;
-		settingRead_rgb = true;
+		var tmp = data.key1;
 
-
-								console.log("per channel: " + PER_CHANNEL_MODE);
-
-
-		if(settingsLoaded())
-			startAnalysis();
 	});
 }
 
@@ -141,27 +129,24 @@ function startAnalysis()
 
 	if(!ENABLED)
 	{
-		console.log("DISABLED!");
+		if(gifs.length > 0)
+		{
+			console.log("show them");
+			for(var i = 0; i <gifs.length; ++i)
+				$(gifs[i].v2).eq(0).show()
+		}
+		
 		return;
 	}
 
-	//If page allready been scanned then no need to do it again
-	if(gifs.length > 0)
-	{
-		for(var i = 0; i <gifs.length; ++i)
-				processGif(gifs[i].v1, gifs[i].v2, onAnalysisComplete);
-
-		return;
-	}
-
+	gifs = [];
 	var k = 0;
 	$('img').each(function (idx, img_tag)
 	{
 
-		$(img_tag).hide()
-
 		if (/^.+\.(?:G|g)(?:I|i)(?:F|f)$/.test($(img_tag).prop("src")))
 		{
+			$(img_tag).hide()
 			gifs[k++]=  new GIF_CUSTOM($(img_tag).attr("src"), img_tag);
 			processGif($(img_tag).attr("src"), img_tag, onAnalysisComplete)
 		}

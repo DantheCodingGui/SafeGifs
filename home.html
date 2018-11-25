@@ -3,8 +3,6 @@
 	<head>
 		<title> Safe Gifs Demo </title>
 
-		<h1>SAFE GIFS DEMO</h1>
-
 		<style>
 		html, body {
 			width: 100%;
@@ -12,15 +10,17 @@
 			min-height: 100%;
 			margin: 0;
 	 		text-align: center;
-			background-color: #9575CD;
+			background-color: #9575CD
 			}
-			h1 {
-				margin: 0;
-				padding: 20px;
+
+			h2 {
+				color: white;
 				font-family: Roboto;
-				text-align: left;
-				 color: white;
+				font-weight: bold;
+				position: relative;
 			}
+
+
 
 			button {
 				margin: 30px;
@@ -58,6 +58,26 @@
 .contact_container img.top:hover {
   opacity: 0;
 }
+
+.brain {
+	top: 200px;
+  margin: 20px 0 20px 0;
+  position: relative;
+  text-align: center;
+}
+.brain img {
+  display: inline-block;
+  height: 400px;
+  position: absolute;
+
+  -webkit-transition: opacity ease-in-out 250ms;
+  -moz-transition: opacity ease-in-out 250ms;
+  -o-transition: opacity ease-in-out 250ms;
+  transition: opacity ease-in-out 250ms;
+}
+.brain img.top:hover {
+  opacity: 0;
+}
 		</style>
 
 		<script>
@@ -78,27 +98,31 @@
 
 	<body>
 
-		<button onclick="toggleGifs()">Toggle Gifs</button>
+		<div>
+			<div class="brain" style="display: inline; right: 153px;">
+				<h2 id="leftTag">Gif Reel</h2>
+				<a href="demoReel.html" id="BrainLeft">
+					<img src="myIcon/brainLineL.svg" alt="Github"/>
+					<img src="myIcon/brainSolidL.svg" class="top" alt="Github"/>
+				</a>
+			</div>
+			<div class="brain" style="display: inline; left: 17px;">
+				<a href="CoolGifs.html" id="BrainRight">
+					<img src="myIcon/brainLineR.svg" alt="Github"/>
+					<img src="myIcon/brainSolidR.svg" class="top" alt="Github"/>
+				</a>
+				<h2 style="left: 200px; top: -45px;">Details</h2>
+			</div>
+		</div>
 
-		<table style = "width:100%">
-			<tr>
-				<td> <img src="GIFS/5HZ.gif"> </td>
-				<td> <img src="GIFS/10HZ.gif"> </td>
-				<td> <img src="GIFS/15HZ.gif"> </td>
-			</tr>
-			<tr>
-				<td> <img src="GIFS/20HZ.gif"> </td>
-				<td> <img src="GIFS/25HZ.gif"> </td>
-				<td> <img src="GIFS/30HZ.gif"> </td>
-			</tr>
-		<table>
-
-				<div class="contact_container">
+			<div class="contact_container">
         <a href="https://github.com/DantheCodingGui/SafeGifs" id="Github_logo">
           <img src="myIcon/github_logo_colour.svg" alt="Github"/>
           <img src="myIcon/github_logo.svg" class="top" alt="Github"/>
         </a>
       </div>
+
+
 
 	</body>
 </html>
