@@ -1,3 +1,5 @@
+
+var ENABLED;
 //This controls how sensitive to changes in intensity the system is.
 // A percentage change greater than this between successive frames counts as a change
 var PERCENTAGE_CHANGE_CUTTOFF = 0.5;
@@ -8,11 +10,10 @@ var THRESHOLD_HIGH_FREQ = 40;
 var WINDOW_SIZE = 0.5;
 //The number of windows in which a dangerous change frequency is detected, required to consider the entire image dangerous
 var WINDOW_VIOLATION_THRESHOLD = 1;
-
 //Should flashes be looked for in each colour channel separately or just in overall intensity
-var PER_CHANNEL_MODE = false;
+var PER_CHANNEL_MODE = true;
 
-var DEBUG = true;
+var DEBUG = false;
 
 //alert("Extension is working")
 class Gif_Frame
@@ -37,9 +38,7 @@ class GIF_CUSTOM
 
 chrome.runtime.onMessage.addListener(
       function(request, sender, sendResponse) {
-        console.log("message received");
-		THRESHOLD_LOW_FREQ = 30;
-		startAnalysis();
+		loadSettings();
       }
     );
 
@@ -47,11 +46,105 @@ chrome.runtime.onMessage.addListener(
 
 
 var gifs = new Array();
-startAnalysis()
+loadSettings()
 
-function startAnalysis() 
+
+var settingRead_enabled = false;
+var settingRead_lowerFreq = false;
+var settingRead_upperFreq = false;
+var settingRead_sensitivity = false;
+var settingRead_rgb=false;
+
+function settingsLoaded()
 {
-	
+	return settingRead_enabled && settingRead_lowerFreq && settingRead_upperFreq && settingRead_sensitivity && settingRead_rgb ;
+}
+
+function loadSettings()
+{
+	settingRead_enabled = settingRead_lowerFreq = settingRead_upperFreq = settingRead_sensitivity = settingRead_rgb = false;
+
+	var key = "enabled";
+	key = 'a'.key;
+	chrome.storage.sync.get(key, function(data) {
+		ENABLED = data.key;
+		settingRead_enabled = true;
+
+				console.log("Enabled: " + ENABLED);
+
+
+		if(settingsLoaded())
+			startAnalysis();
+	});
+
+
+	var key1 = "frequency_lower";
+	key1 = 'a'.key1;
+
+	chrome.storage.sync.get(key1, function(data) {
+		THRESHOLD_LOW_FREQ = data.key2;
+		settingRead_lowerFreq = true;
+
+		console.log("LOW: " + THRESHOLD_LOW_FREQ);
+
+		if(settingsLoaded())
+			startAnalysis();
+	});
+
+	var key2 = "frequency_upper";
+		key2 = 'a'.key2;
+
+	chrome.storage.sync.get(key2, function(data) {
+		THRESHOLD_HIGH_FREQ = data.key3;
+		settingRead_upperFreq = true;
+
+				console.log("HIGH: " + THRESHOLD_HIGH_FREQ);
+
+
+		if(settingsLoaded())
+			startAnalysis();
+	});
+
+		var key3 = "sensitivity";
+			key3 = 'a'.key3;
+
+	chrome.storage.sync.get(key3, function(data) {
+		PERCENTAGE_CHANGE_CUTTOFF = data.key4;
+		settingRead_sensitivity = true;
+
+						console.log("Sensit: " + PERCENTAGE_CHANGE_CUTTOFF);
+
+
+		if(settingsLoaded())
+			startAnalysis();
+	});
+
+		var key4=  "perChannel";
+		key4= 'a'.key4;
+
+
+	chrome.storage.sync.get(key4, function(data) {
+		PER_CHANNEL_MODE = data.key1;
+		settingRead_rgb = true;
+
+
+								console.log("per channel: " + PER_CHANNEL_MODE);
+
+
+		if(settingsLoaded())
+			startAnalysis();
+	});
+}
+
+function startAnalysis()
+{
+
+	if(!ENABLED)
+	{
+		console.log("DISABLED!");
+		return;
+	}
+
 	//If page allready been scanned then no need to do it again
 	if(gifs.length > 0)
 	{
@@ -70,7 +163,6 @@ function startAnalysis()
 		if (/^.+\.(?:G|g)(?:I|i)(?:F|f)$/.test($(img_tag).prop("src")))
 		{
 			gifs[k++]=  new GIF_CUSTOM($(img_tag).attr("src"), img_tag);
-			
 			processGif($(img_tag).attr("src"), img_tag, onAnalysisComplete)
 		}
 	});
@@ -216,7 +308,7 @@ function examineChanges(changes, spectrum)
 			//Is the frequency of changes in intensity within the danger zone
 			if(changeFreq >= THRESHOLD_LOW_FREQ && changeFreq <= THRESHOLD_HIGH_FREQ)
 				++dangerFlags;
-			else
+			else if(DEBUG)
 				console.log("Widnow Freq: " + changeFreq);
 
 			if(dangerFlags >= WINDOW_VIOLATION_THRESHOLD)
@@ -275,8 +367,6 @@ function findChanges(spectrum)
 		else
 			changes[i] = 0;
 
-
-		//console.log("[i]: " + spectrum[i].avgI + " [i-1]: " + spectrum[i-1].avgI + " %"+ percDiff );
 	}
 
 	return changes;
