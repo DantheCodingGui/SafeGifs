@@ -1,9 +1,40 @@
 <!doctype html>
 <html>
   <head>
-    <title>Test</title>
+    <script src="Dialog.js"></script>
+
+    <link href = "libs/jquery-ui.css" rel = "stylesheet" charset="UTF-8">
+    <link href = "libs/jquery-switchButton.css" rel = "stylesheet" charset="UTF-8">
+      <script src = "libs/jquery.min.js"></script>
+      <script src = "libs/jquery-ui.js"></script>
+      <script src="libs/jquery-switchButton.js"></script>
   </head>
   <body>
-    <h1>Hello World!</h1>
+
+    <form>
+      <label for="enable">Enable: </label> <br>
+      <input type="checkbox" name="enable" id="enable">
+    </form>
+
+    <p>
+       <label for="sensitivity">Overall sensitivity:</label>
+       <input type="text" id="sensitivity"
+          style = "border:0; font-weight:bold;">
+    </p>
+    <div id="sensitivity-slider"></div> <br>
+
+    <form>
+      <label for="perChannel">Per Channel mode: </label> <br>
+      <input type="checkbox" name="perChannel" id="perChannel">
+    </form>
+
+    <p>
+       <label for="frequency">Frequency Range:</label>
+       <input type="text" id="frequency"
+          style = "border:0; font-weight:bold;">
+    </p>
+    <div id="frequency-slider"></div>
+
+    <p style="font-size: 7vw;">WARNING: extension is still in beta and thus may not work on all cases</p>
   </body>
 </html>
