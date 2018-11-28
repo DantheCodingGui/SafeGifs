@@ -125,27 +125,12 @@ function loadSettings()
 function RestoreViews() {
 
   $("input#enable")[0].checked = ENABLED;
-  $("input#perChannel")[0].checked = PER_CHANNEL_MODE;
 
   $( "#frequency-slider" ).prop("values", 0, THRESHOLD_LOW_FREQ);
   $( "#frequency-slider" ).prop("values", 1, THRESHOLD_HIGH_FREQ);
 
   $( "#sensitivity-slider" ).prop("value", PERCENTAGE_CHANGE_CUTTOFF);
 
-  if (!ENABLED)
-    InvalidatePopup();
-}
-
-function InvalidatePopup() {
-  $("input#perChannel").attr("disabled", !ENABLED);
-  if (!ENABLED) {
-    $("frequency-slider").slider( "disable");
-    $("#sensitivity-slider").slider( "disable");
-  }
-  else {
-    $("frequency-slider").slider( "enable");
-    $("#sensitivity-slider").slider( "enable");
-  }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -180,7 +165,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     SendMsgToContentScript();
 
-    InvalidatePopup();
   })
   
     var e = this.checked;
